@@ -1,17 +1,11 @@
-/*
-A basic script template
------------------------
+const DEFAULT_MONITOR_INTERVAL = 2000;
 
-This is the starting point for an awesome Porla script. You have the power
-of the whole Node.js ecosystem here. Make it sing!
-*/
+function checkMonitoredFolders(porla) {
+    porla.log('debug', 'Checking monitored folders');
+}
 
 module.exports = (porla) => {
-    porla.on('torrent_added', (torrent) => {
-
-    });
-
-    porla.on('torrent_finished', (torrent) => {
-
-    });
+    setTimeout(
+        checkMonitoredFolders.bind(undefined, porla),
+        DEFAULT_MONITOR_INTERVAL);
 };
