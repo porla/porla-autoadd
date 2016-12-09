@@ -1,20 +1,22 @@
 {
   "name": "porla-autoadd",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "author": "",
-  "keywords": [ "porla-script", "porla-autoadd" ],
+  "keywords": [
+    "porla-script",
+    "porla-autoadd"
+  ],
   "repository": {
-      "type": "git",
-      "url": "git+https://github.com/porla/porla-autoadd"
+    "type": "git",
+    "url": "git+https://github.com/porla/porla-autoadd"
   },
   "license": "MIT",
-  "dependencies": {
-  },
+  "dependencies": {},
   "devDependencies": {
-      "porla": "0.x"
+    "porla": "0.x"
   },
   "peerDependencies": {
-      "porla": "0.x"
+    "porla": "0.x"
   },
   "main": "./src/index"
 }
