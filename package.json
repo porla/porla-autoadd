@@ -11,7 +11,9 @@
     "url": "git+https://github.com/porla/porla-autoadd"
   },
   "license": "MIT",
-  "dependencies": {},
+  "dependencies": {
+    "async": "^2.1.4"
+  },
   "devDependencies": {
     "porla": "0.x"
   },
