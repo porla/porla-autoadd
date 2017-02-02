@@ -3,6 +3,10 @@ const fs    = require('fs');
 const path  = require('path');
 
 const DEFAULT_MONITOR_INTERVAL = 5000;
+const schedule = (porla) => setTimeout(
+        checkMonitoredFolders.bind(undefined, porla),
+        DEFAULT_MONITOR_INTERVAL);
+
 let history = [];
 
 function getFilesInFolders(folders, completionCallback) {
@@ -31,19 +35,14 @@ function getFilesInFolders(folders, completionCallback) {
 }
 
 function checkMonitoredFolders(porla) {
-    const autoadd = porla.config['autoadd'] || {};
-    const folders = autoadd['folders'] || [];
+    const folders = porla.config.get([ 'autoadd', 'folders' ], []);
 
     porla.log('debug', 'Checking %d monitored folder(s)', folders.length);
-
-    const schedule = () => setTimeout(
-        checkMonitoredFolders.bind(undefined, porla),
-        DEFAULT_MONITOR_INTERVAL);
 
     getFilesInFolders(folders, (err, results) => {
         if (err) {
             porla.log('error', 'Error when getting files: %s', err);
-            return schedule();
+            return schedule(porla);
         }
 
         async.each(results, (result, callback) => {
@@ -65,7 +64,7 @@ function checkMonitoredFolders(porla) {
                 } else if (typeof result.folder === 'object') {
                     const filePath = path.join(result.folder.path, file);
                     const extension = path.extname(filePath);
-                    const savePath = result.folder.savePath || porla.config['defaultSavePath'] || undefined;
+                    const savePath = result.folder.savePath || porla.config.get([ 'defaultSavePath' ], '');
 
                     if (history.includes(filePath)) {
                         continue;
@@ -85,7 +84,7 @@ function checkMonitoredFolders(porla) {
                         }
                     }
                 } else {
-                    throw new Error('Invalid folder object: ' + typeof result.folder);
+                    porla.log('error', 'Invalid folder type: %s', typeof result.folder)
                 }
             }
 
@@ -95,13 +94,11 @@ function checkMonitoredFolders(porla) {
                 porla.log('error', 'Error when iterating files: %s', err);
             }
 
-            return schedule();
+            return schedule(porla);
         });
     });
 }
 
-module.exports = (porla, services) => {
-    setTimeout(
-        checkMonitoredFolders.bind(undefined, porla),
-        DEFAULT_MONITOR_INTERVAL);
+module.exports = (porla) => {
+    schedule(porla);
 };
