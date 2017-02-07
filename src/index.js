@@ -3,8 +3,8 @@ const fs    = require('fs');
 const path  = require('path');
 
 const DEFAULT_MONITOR_INTERVAL = 5000;
-const schedule = (porla) => setTimeout(
-        checkMonitoredFolders.bind(undefined, porla),
+const schedule = (porla, folders) => setTimeout(
+        checkMonitoredFolders.bind(undefined, porla, folders),
         DEFAULT_MONITOR_INTERVAL);
 
 let history = [];
@@ -34,15 +34,11 @@ function getFilesInFolders(folders, completionCallback) {
     }, completionCallback);
 }
 
-function checkMonitoredFolders(porla) {
-    const folders = porla.config.get([ 'autoadd', 'folders' ], []);
-
-    porla.log('debug', 'Checking %d monitored folder(s)', folders.length);
-
+function checkMonitoredFolders(porla, folders) {
     getFilesInFolders(folders, (err, results) => {
         if (err) {
             porla.log('error', 'Error when getting files: %s', err);
-            return schedule(porla);
+            return schedule(porla, folders);
         }
 
         async.each(results, (result, callback) => {
@@ -94,11 +90,14 @@ function checkMonitoredFolders(porla) {
                 porla.log('error', 'Error when iterating files: %s', err);
             }
 
-            return schedule(porla);
+            return schedule(porla, folders);
         });
     });
 }
 
 module.exports = (porla) => {
-    schedule(porla);
+    const folders = porla.config.get([ 'autoadd', 'folders' ], []);
+    porla.log('info', 'Monitoring %d folder(s)', folders.length);
+
+    schedule(porla, folders);
 };
